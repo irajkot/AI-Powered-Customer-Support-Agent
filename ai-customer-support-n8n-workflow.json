@@ -20,12 +20,6 @@
       ],
       "id": "8fa3070a-ef3d-4f40-9f66-34660a1fb183",
       "name": "Gmail Trigger",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "EeYN4wQy7PxpLAd0",
-          "name": "Insiyah's Email Connection"
-        }
-      }
     },
     {
       "parameters": {
@@ -62,12 +56,6 @@
       ],
       "id": "e95d64b5-1a95-4f85-825a-676e43e4483f",
       "name": "OpenAI Chat Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "oOuunk3QLBTnWLfy",
-          "name": "n8n free OpenAI API credits"
-        }
-      }
     },
     {
       "parameters": {
@@ -83,15 +71,9 @@
         464,
         304
       ],
-      "id": "b9bfcfce-768f-4293-97ca-ee566048250c",
+      "id": "",
       "name": "Reply to a message in Gmail",
-      "webhookId": "4ef06b0b-bafb-4638-82a3-8576de9b4f6c",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "EeYN4wQy7PxpLAd0",
-          "name": "Insiyah's Email Connection"
-        }
-      }
+      "webhookId": "",
     },
     {
       "parameters": {
@@ -102,7 +84,7 @@
           "parameters": [
             {
               "name": "Api-Key",
-              "value": "pcsk_5mog7K_BJLTJ1tqhtocFREGniWjbktfmD7eKGcvisHTJTrG1wuWVG865uBSatiskckBUvW"
+              "value": ""
             }
           ]
         },
@@ -117,7 +99,7 @@
         368,
         208
       ],
-      "id": "9efd6e92-79c4-4d69-9110-ad2eb75dd87a",
+      "id": "",
       "name": "Pinecone Chat Assistant"
     }
   ],

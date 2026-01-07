@@ -1,0 +1,183 @@
+{
+  "name": "Email Customer Support",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8fa3070a-ef3d-4f40-9f66-34660a1fb183",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "EeYN4wQy7PxpLAd0",
+          "name": "Insiyah's Email Connection"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.snippet }}",
+        "options": {
+          "systemMessage": "You are an AI Customer Support Agent for the company.\n\nYour responsibility is to read incoming customer emails, generate accurate responses using the company knowledge base, and send a professional reply back to the customer using the Gmail tool.\n\n====================\nCORE RULE\n====================\nYou must always use the Pinecone Chat Assistant (via the HTTP tool) to generate answers.\nThe Pinecone Chat Assistant is the ONLY source of truth.\n\n====================\nWORKFLOW (MANDATORY)\n====================\n1. An email is received from a customer.\n2. You send the FULL email content to the Pinecone Chat Assistant using the HTTP tool.\n3. You receive the response from the Pinecone Chat Assistant.\n4. You rewrite the response into a clear, polite, and professional customer support email.\n5. You send the final email response back to the customer using the Gmail tool.\n\n====================\nSTRICT CONSTRAINTS\n====================\n- Do NOT add new information.\n- Do NOT guess or assume facts.\n- Do NOT hallucinate.\n- Do NOT answer directly without calling the Pinecone Chat Assistant.\n- Do NOT mention Pinecone, AI, embeddings, RAG, or internal systems.\n\nIf the Pinecone Chat Assistant does NOT provide a clear or sufficient answer:\n- Politely explain that the information is currently unavailable.\n- Ask the customer for more details OR inform them that a human support agent will follow up.\n\n====================\nEMAIL WRITING GUIDELINES\n====================\n- Use a polite and friendly tone.\n- Be concise and easy to understand.\n- Address the customer’s question directly.\n- Avoid technical jargon unless the customer used it.\n- End the email with a supportive closing line.\n\n====================\nGMAIL TOOL INSTRUCTIONS\n====================\n- Use the Gmail tool to send the response.\n- Reply to the original sender’s email address.\n- Maintain the same email thread when replying.\n- Set the subject as a reply (e.g., \"Re: <original subject>\").\n- Use the drafted response as the email body.\n\n====================\nOUTPUT REQUIREMENTS\n====================\n- The final output must be the exact email body that will be sent.\n- Do NOT include analysis, reasoning, or system messages.\n- Do NOT include instructions or explanations.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "89a4e174-c52f-44da-b00b-b18d5c3b03e2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        208
+      ],
+      "id": "e95d64b5-1a95-4f85-825a-676e43e4483f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oOuunk3QLBTnWLfy",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $json.id }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        464,
+        304
+      ],
+      "id": "b9bfcfce-768f-4293-97ca-ee566048250c",
+      "name": "Reply to a message in Gmail",
+      "webhookId": "4ef06b0b-bafb-4638-82a3-8576de9b4f6c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "EeYN4wQy7PxpLAd0",
+          "name": "Insiyah's Email Connection"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://prod-1-data.ke.pinecone.io/assistant/chat/customer-support",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Api-Key",
+              "value": "pcsk_5mog7K_BJLTJ1tqhtocFREGniWjbktfmD7eKGcvisHTJTrG1wuWVG865uBSatiskckBUvW"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $fromAI(\"searchQuery\") }}\"\n    }\n  ],\n  \"stream\": false,\n  \"model\": \"gpt-4o\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        368,
+        208
+      ],
+      "id": "9efd6e92-79c4-4d69-9110-ad2eb75dd87a",
+      "name": "Pinecone Chat Assistant"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Chat Assistant": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "1da027a4-1f1e-4d85-90bf-271b7a665b1a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e33c4b7cadb926ad03f0f8704309bd7bcddf51e74364a4bdb0580706929e2374"
+  },
+  "id": "MRUpdItJjQofwCJu",
+  "tags": []
+}
